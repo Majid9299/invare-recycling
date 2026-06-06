@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>إنفير — منصة إعادة التدوير</title>
+  <style>
+    /* ===========================
+       متغيرات الألوان — عدّلها هنا
+    =========================== */
+    :root {
+      --primary:   #2e7d32;   /* الأخضر الرئيسي */
+      --primary-light: #e8f5e9;
+      --accent:    #ff8f00;   /* البرتقالي */
+      --text:      #212121;
+      --muted:     #757575;
+      --bg:        #f5f5f5;
+      --white:     #ffffff;
+      --radius:    12px;
+      --shadow:    0 2px 12px rgba(0,0,0,0.08);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ===========================
+       الشريط العلوي
+    =========================== */
+    header {
+      background: var(--primary);
+      color: var(--white);
+      padding: 0 24px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow);
+    }
+    .logo { font-size: 22px; font-weight: 700; letter-spacing: 1px; }
+    .logo span { color: var(--accent); }
+
+    nav { display: flex; gap: 8px; }
+    nav button {
+      background: transparent;
+      color: var(--white);
+      border: 1px solid rgba(255,255,255,0.4);
+      padding: 6px 14px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+    nav button:hover, nav button.active {
+      background: var(--white);
+      color: var(--primary);
+    }
+
+    /* ===========================
+       الصفحات
+    =========================== */
+    .page { display: none; padding: 24px; max-width: 900px; margin: 0 auto; }
+    .page.active { display: block; }
+
+    /* ===========================
+       البطاقات
+    =========================== */
+    .card {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+    }
+    .card h2 {
+      font-size: 18px;
+      margin-bottom: 16px;
+      color: var(--primary);
+      border-bottom: 2px solid var(--primary-light);
+      padding-bottom: 8px;
+    }
+
+    /* ===========================
+       النماذج
+    =========================== */
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-size: 14px; color: var(--muted); margin-bottom: 6px; }
+    input, select, textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 15px;
+      font-family: inherit;
+      transition: border 0.2s;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    /* ===========================
+       الأزرار
+    =========================== */
+    .btn {
+      padding: 10px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 600;
+      transition: opacity 0.2s;
+    }
+    .btn:hover { opacity: 0.88; }
+    .btn-primary { background: var(--primary); color: var(--white); }
+    .btn-accent  { background: var(--accent);  color: var(--white); }
+    .btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
+
+    /* ===========================
+       الباركود
+    =========================== */
+    .barcode-box {
+      background: var(--primary-light);
+      border: 2px dashed var(--primary);
+      border-radius: var(--radius);
+      padding: 24px;
+      text-align: center;
+      margin-top: 16px;
+    }
+    .barcode-id {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      color: var(--primary);
+    }
+    .barcode-label { font-size: 13px; color: var(--muted); margin-top: 6px; }
+
+    /* ===========================
+       الإحصائيات
+    =========================== */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .stat-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 20px;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+    .stat-card .num { font-size: 32px; font-weight: 700; color: var(--primary); }
+    .stat-card .lbl { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+    /* ===========================
+       الجدول
+    =========================== */
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 12px 16px; text-align: right; font-size: 14px; }
+    th { background: var(--primary-light); color: var(--primary); font-weight: 600; }
+    tr:not(:first-child) td { border-top: 1px solid #f0f0f0; }
+    tr:hover td { background: #fafafa; }
+
+    /* ===========================
+       الشارات
+    =========================== */
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .badge-green  { background: #e8f5e9; color: #2e7d32; }
+    .badge-orange { background: #fff3e0; color: #e65100; }
+    .badge-blue   { background: #e3f2fd; color: #1565c0; }
+
+    /* ===========================
+       الرسالة التأكيدية
+    =========================== */
+    .alert {
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-top: 12px;
+      font-size: 14px;
+      display: none;
+    }
+    .alert-success { background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
+
+    /* ===========================
+       الصفحة الرئيسية
+    =========================== */
+    .hero {
+      background: linear-gradient(135deg, var(--primary), #1b5e20);
+      color: var(--white);
+      border-radius: var(--radius);
+      padding: 40px 32px;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    .hero h1 { font-size: 28px; margin-bottom: 10px; }
+    .hero p  { font-size: 16px; opacity: 0.85; margin-bottom: 24px; }
+    .hero-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .hero-btns button {
+      padding: 12px 28px;
+      border-radius: 8px;
+      border: none;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .hero-btns button:hover { opacity: 0.88; }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+    .step-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+    .step-icon { font-size: 36px; margin-bottom: 10px; }
+    .step-card h3 { font-size: 15px; margin-bottom: 6px; color: var(--primary); }
+    .step-card p  { font-size: 13px; color: var(--muted); }
+  </style>
+</head>
+<body>
+
+<!-- ===========================
+     الشريط العلوي
+=========================== -->
+<header>
+  <div class="logo">in<span>vare</span></div>
+  <nav>
+    <button class="active" onclick="showPage('home', this)">الرئيسية</button>
+    <button onclick="showPage('individual', this)">الفرد</button>
+    <button onclick="showPage('store', this)">المحل</button>
+    <button onclick="showPage('dashboard', this)">لوحة التحكم</button>
+  </nav>
+</header>
+
+<!-- ===========================
+     الصفحة الرئيسية
+=========================== -->
+<div id="home" class="page active">
+  <div class="hero">
+    <h1>منصة إنفير لإعادة التدوير</h1>
+    <p>حوّل مخلفاتك إلى قيمة — بسهولة وشفافية</p>
+    <div class="hero-btns">
+      <button style="background:var(--white);color:var(--primary);" onclick="showPage('individual', document.querySelectorAll('nav button')[1])">أنا فرد</button>
+      <button style="background:var(--accent);color:var(--white);" onclick="showPage('store', document.querySelectorAll('nav button')[2])">أنا صاحب محل</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>كيف تعمل المنصة؟</h2>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-icon">📦</div>
+        <h3>١. أدرج موادك</h3>
+        <p>الفرد يسجّل نوع المادة وكميتها في المنصة</p>
+      </div>
+      <div class="step-card">
+        <div class="step-icon">🏷️</div>
+        <h3>٢. احصل على باركود</h3>
+        <p>تصدر المنصة باركود خاص بكل إعلان</p>
+      </div>
+      <div class="step-card">
+        <div class="step-icon">🏪</div>
+        <h3>٣. اذهب للمحل</h3>
+        <p>المحل يفحص المادة ويصور الباركود للتأكيد</p>
+      </div>
+      <div class="step-card">
+        <div class="step-icon">💰</div>
+        <h3>٤. استلم المبلغ</h3>
+        <p>يتم تحويل المبلغ تلقائياً بعد الموافقة</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===========================
+     صفحة الفرد
+=========================== -->
+<div id="individual" class="page">
+  <div class="card">
+    <h2>📦 إدراج مادة للبيع</h2>
+    <div class="form-group">
+      <label>نوع المادة</label>
+      <select id="materialType">
+        <option value="">— اختر —</option>
+        <option>كرتون</option>
+        <option>بلاستيك</option>
+        <option>معادن</option>
+        <option>زجاج</option>
+        <option>ورق</option>
+        <option>ألمنيوم (علب)</option>
+        <option>أخرى</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>الكمية التقريبية (كيلوغرام)</label>
+      <input type="number" id="materialQty" placeholder="مثال: 5" min="0.5" step="0.5"/>
+    </div>
+    <div class="form-group">
+      <label>ملاحظات إضافية</label>
+      <textarea id="materialNotes" rows="3" placeholder="أي تفاصيل تساعد المحل على التقييم..."></textarea>
+    </div>
+    <button class="btn btn-primary" onclick="generateBarcode()">إنشاء باركود</button>
+
+    <div class="barcode-box" id="barcodeResult" style="display:none;">
+      <div class="barcode-label">رقم الإعلان</div>
+      <div class="barcode-id" id="barcodeNum"></div>
+      <div class="barcode-label" style="margin-top:10px;">أبرز هذا الرقم لصاحب المحل</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>📋 إعلاناتي</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>رقم الإعلان</th>
+          <th>المادة</th>
+          <th>الكمية</th>
+          <th>الحالة</th>
+        </tr>
+      </thead>
+      <tbody id="individualOrders">
+        <tr>
+          <td>INV-0012</td>
+          <td>كرتون</td>
+          <td>8 كغ</td>
+          <td><span class="badge badge-green">مكتمل</span></td>
+        </tr>
+        <tr>
+          <td>INV-0008</td>
+          <td>بلاستيك</td>
+          <td>3 كغ</td>
+          <td><span class="badge badge-orange">قيد المعالجة</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ===========================
+     صفحة المحل
+=========================== -->
+<div id="store" class="page">
+  <div class="card">
+    <h2>🏪 مسح باركود الفرد</h2>
+    <div class="form-group">
+      <label>أدخل رقم الإعلان</label>
+      <input type="text" id="scanInput" placeholder="مثال: INV-0015"/>
+    </div>
+    <button class="btn btn-primary" onclick="scanBarcode()">بحث</button>
+
+    <div id="scanResult" style="display:none; margin-top:20px;">
+      <div class="card" style="background:var(--primary-light); box-shadow:none;">
+        <h2>تفاصيل الإعلان</h2>
+        <p><strong>المادة:</strong> <span id="res-material"></span></p>
+        <p style="margin-top:8px;"><strong>الكمية المُدرجة:</strong> <span id="res-qty"></span> كغ</p>
+        <p style="margin-top:8px;"><strong>ملاحظات:</strong> <span id="res-notes"></span></p>
+
+        <div style="margin-top:16px; border-top:1px solid #c8e6c9; padding-top:16px;">
+          <div class="form-group">
+            <label>الكمية الفعلية بعد الفحص (كغ)</label>
+            <input type="number" id="actualQty" placeholder="أدخل الكمية الفعلية"/>
+          </div>
+          <div class="form-group">
+            <label>السعر المتفق عليه (ريال/كغ)</label>
+            <input type="number" id="agreedPrice" placeholder="مثال: 0.5"/>
+          </div>
+          <button class="btn btn-accent" onclick="confirmDeal()">تأكيد الصفقة وتحويل المبلغ</button>
+        </div>
+      </div>
+      <div class="alert alert-success" id="dealSuccess">
+        ✅ تم تحويل المبلغ بنجاح وتسجيل الصفقة في المنصة
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>💳 باركود الدفع الخاص بالمحل</h2>
+    <p style="color:var(--muted); font-size:14px; margin-bottom:16px;">يصوّره الزبون لتحويل مبلغ أو استخدام رصيده في الشراء</p>
+    <div class="barcode-box">
+      <div class="barcode-label">معرّف المحل</div>
+      <div class="barcode-id">STORE-4471</div>
+      <div class="barcode-label" style="margin-top:10px;">امسح هذا الرمز لإتمام الدفع</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===========================
+     لوحة التحكم
+=========================== -->
+<div id="dashboard" class="page">
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="num">142</div>
+      <div class="lbl">إجمالي الصفقات</div>
+    </div>
+    <div class="stat-card">
+      <div class="num">38</div>
+      <div class="lbl">محل مشارك</div>
+    </div>
+    <div class="stat-card">
+      <div class="num">6.4 طن</div>
+      <div class="lbl">مواد تم تدويرها</div>
+    </div>
+    <div class="stat-card">
+      <div class="num">57.6 ر</div>
+      <div class="lbl">إيرادات إنفير</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>📊 آخر الصفقات</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>رقم الإعلان</th>
+          <th>المادة</th>
+          <th>الوزن</th>
+          <th>المحل</th>
+          <th>الحالة</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>INV-0021</td>
+          <td>كرتون</td>
+          <td>12 كغ</td>
+          <td>محل أبو علي</td>
+          <td><span class="badge badge-green">مكتمل</span></td>
+        </tr>
+        <tr>
+          <td>INV-0020</td>
+          <td>ألمنيوم</td>
+          <td>4 كغ</td>
+          <td>سوبرماركت النور</td>
+          <td><span class="badge badge-orange">قيد المعالجة</span></td>
+        </tr>
+        <tr>
+          <td>INV-0019</td>
+          <td>بلاستيك</td>
+          <td>7 كغ</td>
+          <td>محل أبو علي</td>
+          <td><span class="badge badge-blue">بانتظار الفرد</span></td>
+        </tr>
+        <tr>
+          <td>INV-0018</td>
+          <td>ورق</td>
+          <td>15 كغ</td>
+          <td>مركز الأمل</td>
+          <td><span class="badge badge-green">مكتمل</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ===========================
+     JavaScript
+=========================== -->
+<script>
+  // ===========================
+  // التنقل بين الصفحات
+  // ===========================
+  function showPage(pageId, btn) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+    document.getElementById(pageId).classList.add('active');
+    if (btn) btn.classList.add('active');
+  }
+
+  // ===========================
+  // توليد الباركود
+  // ===========================
+  function generateBarcode() {
+    const type = document.getElementById('materialType').value;
+    const qty  = document.getElementById('materialQty').value;
+    if (!type || !qty) {
+      alert('يرجى اختيار نوع المادة وإدخال الكمية');
+      return;
+    }
+    const id = 'INV-' + String(Math.floor(Math.random() * 9000) + 1000);
+    document.getElementById('barcodeNum').textContent = id;
+    document.getElementById('barcodeResult').style.display = 'block';
+
+    // حفظ الإعلان مؤقتاً
+    window._lastListing = { id, type, qty, notes: document.getElementById('materialNotes').value };
+  }
+
+  // ===========================
+  // مسح الباركود في المحل
+  // ===========================
+  function scanBarcode() {
+    const input = document.getElementById('scanInput').value.trim();
+    if (!input) return;
+
+    // بيانات تجريبية
+    const demo = {
+      'INV-0015': { material: 'كرتون', qty: '10', notes: 'نظيف وجاف' },
+      'INV-0016': { material: 'بلاستيك', qty: '5', notes: 'أكياس وزجاجات' },
+    };
+
+    const listing = demo[input] || (
+      window._lastListing && window._lastListing.id === input
+        ? { material: window._lastListing.type, qty: window._lastListing.qty, notes: window._lastListing.notes }
+        : null
+    );
+
+    if (!listing) {
+      alert('رقم الإعلان غير موجود');
+      return;
+    }
+
+    document.getElementById('res-material').textContent = listing.material;
+    document.getElementById('res-qty').textContent      = listing.qty;
+    document.getElementById('res-notes').textContent    = listing.notes || '—';
+    document.getElementById('scanResult').style.display = 'block';
+    document.getElementById('dealSuccess').style.display = 'none';
+  }
+
+  // ===========================
+  // تأكيد الصفقة
+  // ===========================
+  function confirmDeal() {
+    const qty   = document.getElementById('actualQty').value;
+    const price = document.getElementById('agreedPrice').value;
+    if (!qty || !price) {
+      alert('يرجى إدخال الكمية الفعلية والسعر');
+      return;
+    }
+    const total = (parseFloat(qty) * parseFloat(price)).toFixed(2);
+    document.getElementById('dealSuccess').textContent =
+      `✅ تم تحويل ${total} ريال بنجاح وتسجيل الصفقة في المنصة`;
+    document.getElementById('dealSuccess').style.display = 'block';
+  }
+</script>
+
+</body>
+</html>
